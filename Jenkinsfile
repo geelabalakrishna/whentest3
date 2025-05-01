@@ -44,6 +44,7 @@ pipeline {
             when {
                 branch pattern: "^feature[-/].*", comparator: "REGEXP"
             }
+
             steps {
                 echo "🚀 Deploying to DEV environment"
             }
@@ -71,6 +72,10 @@ pipeline {
             when {
                 branch pattern: "prod", comparator: "EQUALS"
             }
+            input {
+            message "Deploy to production?"
+            ok "Proceed"  // Customizes the button label for approval
+            }            
             steps {
                 echo "✅ Deploying to PRODUCTION"
             }
