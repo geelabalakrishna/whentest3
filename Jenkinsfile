@@ -5,7 +5,7 @@ pipeline {
         stage('Build') {
             when {
                 anyOf {
-                    branch pattern: "feature/.*", comparator: "REGEXP"
+                    branch pattern: "^feature[-/].*", comparator: "REGEXP"
                     branch 'test'
                 
                 }
@@ -17,7 +17,7 @@ pipeline {
         stage('Unit Test') {
             when {
                 anyOf {
-                    branch pattern: "feature/.*", comparator: "REGEXP"
+                    branch pattern: "^feature[-/].*", comparator: "REGEXP"
                     branch 'test'
                 
                 }
@@ -29,7 +29,11 @@ pipeline {
 
         stage('Code Analysis') {
             when {
-                branch pattern: "test", comparator: "EQUALS"
+                anyOf {
+                    branch pattern: "^feature[-/].*", comparator: "REGEXP"
+                    branch 'test'
+                
+                }
             }
             steps {
                 echo "🔍 Running code quality checks"
@@ -38,7 +42,7 @@ pipeline {
 
         stage('Deploy to Dev') {
             when {
-                branch pattern: "feature/.*", comparator: "REGEXP"
+                branch pattern: "^feature[-/].*", comparator: "REGEXP"
             }
             steps {
                 echo "🚀 Deploying to DEV environment"
