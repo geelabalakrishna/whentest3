@@ -2,24 +2,34 @@ pipeline {
     agent any
 
     stages {
-        stage('Build & Unit Test') {
+        stage('Build') {
             when {
                 anyOf {
-                    branch 'dev'
-                    branch 'test'
-                    branch 'preprod'
-                    branch 'prod'
                     branch pattern: "feature/.*", comparator: "REGEXP"
+                    branch 'test'
+                
                 }
             }
             steps {
-                echo "🛠️ Building and running unit tests"
+                echo "🛠️ code build"
             }
         }
+        stage('Unit Test') {
+            when {
+                anyOf {
+                    branch pattern: "feature/.*", comparator: "REGEXP"
+                    branch 'test'
+                
+                }
+            }
+            steps {
+                echo "🛠️ Unit Test"
+            }
+        }        
 
         stage('Code Analysis') {
             when {
-                branch pattern: "feature/.*", comparator: "REGEXP"
+                branch pattern: "test", comparator: "EQUALS"
             }
             steps {
                 echo "🔍 Running code quality checks"
@@ -28,7 +38,7 @@ pipeline {
 
         stage('Deploy to Dev') {
             when {
-                branch 'dev'
+                branch pattern: "feature/.*", comparator: "REGEXP"
             }
             steps {
                 echo "🚀 Deploying to DEV environment"
@@ -37,7 +47,7 @@ pipeline {
 
         stage('Deploy to Test') {
             when {
-                branch 'test'
+                branch pattern: "test", comparator: "EQUALS"
             }
             steps {
                 echo "🧪 Deploying to TEST environment"
@@ -46,7 +56,7 @@ pipeline {
 
         stage('Deploy to PreProd') {
             when {
-                branch 'preprod'
+                branch pattern: "preprod", comparator: "EQUALS"
             }
             steps {
                 echo "📦 Deploying to PREPROD"
@@ -55,7 +65,7 @@ pipeline {
 
         stage('Deploy to Prod') {
             when {
-                branch 'prod'
+                branch pattern: "prod", comparator: "EQUALS"
             }
             steps {
                 echo "✅ Deploying to PRODUCTION"
