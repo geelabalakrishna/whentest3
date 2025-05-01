@@ -2,36 +2,63 @@ pipeline {
     agent any
 
     stages {
-        stage('Initial Commit') {
+        stage('Build & Unit Test') {
             when {
-                branch pattern: "main", comparator: "EQUALS"
+                anyOf {
+                    branch 'dev'
+                    branch 'test'
+                    branch 'preprod'
+                    branch 'prod'
+                    branch pattern: "feature/.*", comparator: "REGEXP"
+                }
             }
             steps {
-                echo '📥 Initial commit logic executed (main branch only)'
-            }
-        }
-
-        stage('Build') {
-            steps {
-                echo '🏗️ Building the project...'
+                echo "🛠️ Building and running unit tests"
             }
         }
 
         stage('Code Analysis') {
+            when {
+                branch pattern: "feature/.*", comparator: "REGEXP"
+            }
             steps {
-                echo '🔍 Running code analysis tools...'
+                echo "🔍 Running code quality checks"
             }
         }
 
-        stage('Artifact Upload') {
+        stage('Deploy to Dev') {
+            when {
+                branch 'dev'
+            }
             steps {
-                echo '📦 Uploading artifact to repository (simulated)...'
+                echo "🚀 Deploying to DEV environment"
             }
         }
 
-        stage('Deployment') {
+        stage('Deploy to Test') {
+            when {
+                branch 'test'
+            }
             steps {
-                echo '🚀 Deploying application (simulated)...'
+                echo "🧪 Deploying to TEST environment"
+            }
+        }
+
+        stage('Deploy to PreProd') {
+            when {
+                branch 'preprod'
+            }
+            steps {
+                echo "📦 Deploying to PREPROD"
+            }
+        }
+
+        stage('Deploy to Prod') {
+            when {
+                branch 'prod'
+            }
+            steps {
+                echo "✅ Deploying to PRODUCTION"
             }
         }
     }
